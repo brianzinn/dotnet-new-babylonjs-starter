@@ -51,7 +51,13 @@ namespace dotnet_new_babylonjs_starter
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(
+                new StaticFileOptions
+                {
+                    ServeUnknownFileTypes = true /* unknown mime types (ie: .fx) files will not be served, otherwise! */
+                }
+
+            );
 
             app.UseMvc(routes =>
             {

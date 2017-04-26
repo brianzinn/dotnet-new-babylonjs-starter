@@ -4,10 +4,12 @@ import { Layout } from './components/Layout';
 import Home from './components/Home';
 import FetchData from './components/FetchData';
 import Counter from './components/Counter';
+import Playground from './components/Playground';
 
 export default <Route component={ Layout }>
     <Route path='/' components={{ body: Home }} />
     <Route path='/counter' components={{ body: Counter }} />
+    <Route path='/playground' components={{ body: Playground }} />
     <Route path='/fetchdata' components={{ body: FetchData }}>
         <Route path='(:startDateIndex)' /> { /* Optional route segment that does not affect NavMenu highlighting */ }
     </Route>
