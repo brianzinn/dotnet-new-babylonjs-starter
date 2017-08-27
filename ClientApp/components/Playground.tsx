@@ -1,41 +1,52 @@
 ﻿import * as React from 'react';
-import { Link } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
     Mesh, Scene, Vector3, HemisphericLight, Light, Color3, ArcRotateCamera,
-    StandardMaterial, DirectionalLight, FreeCamera, ShaderMaterial, Engine, ShadowGenerator
+    StandardMaterial, DirectionalLight, FreeCamera, ShaderMaterial, Engine, ShadowGenerator,
+    HighlightLayer, IHighlightLayerOptions
 } from 'babylonjs'
 import { ApplicationState } from '../store';
 import * as PlaygroundStore from '../store/Playground';
 
 import { Scene as ReactScene } from 'react-babylonjs'
 
+type PlaygroundProps =
+    PlaygroundStore.PlaygroundState
+    & typeof PlaygroundStore.actionCreators
+    & RouteComponentProps<{}>;
 
-type PlaygroundProps = PlaygroundStore.PlaygroundState & typeof PlaygroundStore.actionCreators;
-
-class Playground extends React.Component<PlaygroundProps, void> {
+class Playground extends React.Component<PlaygroundProps, {}> {
 
     private light: Light
+    private highlightLayer: HighlightLayer
+    private highlightedMeshName: string | undefined
 
-    onCanvasMouseOver = (e) => {
+    onCanvasMouseOver = (e: any) => {
         const mouseOverIntensity = 0.5
         console.log(`adjusting intensity of '${this.light.name}' from ${this.light.intensity} to ${mouseOverIntensity}.`)
         this.light.intensity = mouseOverIntensity
     }
 
-    onCanvasMouseOut = (e) => {
+    onCanvasMouseOut = (e: any) => { // TODO: find out the type??
         const mouseOutIntensity = 0.3
         console.log(`adjusting intensity of '${this.light.name}' from ${this.light.intensity} to ${mouseOutIntensity}.`)
         this.light.intensity = mouseOutIntensity
     }
 
-    onSceneMount = (e) => {
+    onSceneMount = (e: any) => { // TODO: make a Type
         // const { canvas, scene, engine } = e
         let canvas: HTMLElement = e.canvas
         let scene: Scene = e.scene
         let engine: Engine = e.engine
 
         const { lights, camera } = this.initEnvironment(canvas, scene)
+
+        this.highlightLayer = new HighlightLayer("gameboard-highlight", scene, {
+            mainTextureFixedSize: 1024,
+            camera
+        } as IHighlightLayerOptions)
+        this.highlightedMeshName = undefined
 
         // Copied from default playground.
         // BJS built-in 'sphere' shape. Params: name, subdivs, size, scene
@@ -106,6 +117,18 @@ class Playground extends React.Component<PlaygroundProps, void> {
     }
     onMeshPicked = (mesh: Mesh, scene: Scene) => {
         this.props.clickedOnMesh(mesh.name)
+
+        if (mesh.name !== 'skyBox') {
+            const meshName : string = mesh.name
+            if (this.highlightedMeshName !== undefined) {
+                let highlightedMesh = scene.getMeshByName(this.highlightedMeshName) as Mesh
+                this.highlightLayer.removeMesh(highlightedMesh)
+            }
+
+            this.highlightedMeshName = meshName
+            let highlightedMesh = scene.getMeshByName(this.highlightedMeshName) as Mesh
+            this.highlightLayer.addMesh(highlightedMesh, Color3.Green())
+        }
     }
 
     public render() {
@@ -128,6 +151,9 @@ class Playground extends React.Component<PlaygroundProps, void> {
                 shadersRepository={'/shaders/'}
                 onFocus={this.onCanvasMouseOver}
                 onBlur={this.onCanvasMouseOut}
+                engineOptions={{
+                    stencil: true // needed for HighlightLayer
+                }}
             />
         </div>;
     }
@@ -137,4 +163,4 @@ class Playground extends React.Component<PlaygroundProps, void> {
 export default connect(
     (state: ApplicationState) => state.playground, // Selects which state properties are merged into the component's props
     PlaygroundStore.actionCreators                 // Selects which action creators are merged into the component's props
-)(Playground);
+)(Playground) as typeof Playground;

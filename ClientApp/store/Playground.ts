@@ -49,7 +49,7 @@ export const reducer: Reducer<PlaygroundState> = (state: PlaygroundState, action
         case MESH_CLICKED:
             return { lastClickedMeshName: action.name };
         case MESH_CLEARED:
-            return { lastClickedMeshName: ''}
+            return { lastClickedMeshName: '' }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             const exhaustiveCheck: never = action;

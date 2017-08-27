@@ -4,9 +4,9 @@ import * as Playground from './Playground';
 
 // The top-level state object
 export interface ApplicationState {
-    counter: Counter.CounterState,
-    weatherForecasts: WeatherForecasts.WeatherForecastsState,
-    playground: Playground.PlaygroundState
+    counter: Counter.CounterState;
+    weatherForecasts: WeatherForecasts.WeatherForecastsState;
+    playground: Playground.PlaygroundState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using

@@ -21,9 +21,10 @@ module.exports = (env) => {
                 'bootstrap/dist/css/bootstrap.css',
                 'domain-task',
                 'event-source-polyfill',
+                'history',
                 'react',
                 'react-dom',
-                'react-router',
+                'react-router-dom',
                 'react-redux',
                 'redux',
                 'redux-thunk',
@@ -32,7 +33,7 @@ module.exports = (env) => {
             ],
         },
         output: {
-            publicPath: '/dist/',
+            publicPath: 'dist/',
             filename: '[name].js',
             library: '[name]_[hash]',
         },
@@ -49,7 +50,7 @@ module.exports = (env) => {
         output: { path: path.join(__dirname, 'wwwroot', 'dist') },
         module: {
             rules: [
-                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: 'css-loader' }) }
+                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: isDevBuild ? 'css-loader' : 'css-loader?minimize' }) }
             ]
         },
         plugins: [
@@ -71,7 +72,7 @@ module.exports = (env) => {
             libraryTarget: 'commonjs2',
         },
         module: {
-            rules: [ { test: /\.css(\?|$)/, use: 'css-loader' } ]
+            rules: [ { test: /\.css(\?|$)/, use: isDevBuild ? 'css-loader' : 'css-loader?minimize' } ]
         },
         entry: { vendor: ['aspnet-prerendering', 'react-dom/server'] },
         plugins: [

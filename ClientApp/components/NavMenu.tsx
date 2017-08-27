@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Link } from 'react-router';
+import { NavLink, Link } from 'react-router-dom';
 
-export class NavMenu extends React.Component<void, void> {
+export class NavMenu extends React.Component<{}, {}> {
     public render() {
         return <div className='main-nav'>
                 <div className='navbar navbar-inverse'>
@@ -12,30 +12,30 @@ export class NavMenu extends React.Component<void, void> {
                         <span className='icon-bar'></span>
                         <span className='icon-bar'></span>
                     </button>
-                    <Link className='navbar-brand' to={ '/' }>BJS Test</Link>
+                    <Link className='navbar-brand' to={ '/' }>BabylonJS + .NET</Link>
                 </div>
                 <div className='clearfix'></div>
                 <div className='navbar-collapse collapse'>
                     <ul className='nav navbar-nav'>
                         <li>
-                            <Link to={ '/' } activeClassName='active'>
+                            <NavLink exact to={ '/' } activeClassName='active'>
                                 <span className='glyphicon glyphicon-home'></span> Home
-                            </Link>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to={ '/counter' } activeClassName='active'>
+                            <NavLink to={ '/counter' } activeClassName='active'>
                                 <span className='glyphicon glyphicon-education'></span> Counter
-                            </Link>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to={ '/fetchdata' } activeClassName='active'>
+                            <NavLink to={ '/fetchdata' } activeClassName='active'>
                                 <span className='glyphicon glyphicon-th-list'></span> Fetch data
-                            </Link>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link to={'/playground'} activeClassName='active'>
+                            <NavLink to={ '/playground' } activeClassName='active'>
                                 <span className='glyphicon glyphicon-play'></span> Playground
-                            </Link>
+                            </NavLink>
                         </li>
                     </ul>
                 </div>

@@ -33,7 +33,7 @@ https://blogs.msdn.microsoft.com/webdev/2017/02/14/building-single-page-applicat
 npm install babylonjs --save
 ```
 
-react-babylonjs (https://www.npmjs.com/package/react-babylonjs) is optional, too.  You can grab the source and put your own Scene component in your project.
+react-babylonjs (https://www.npmjs.com/package/react-babylonjs) is optional, too.  You can always just grab the source and put your own Scene component in your project.
 ```sh
 npm install react-babylonjs --save
 ```
