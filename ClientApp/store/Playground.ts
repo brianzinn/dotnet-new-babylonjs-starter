@@ -38,7 +38,7 @@ type KnownAction = MeshClickedAction | MeshClearedAction;
 
 export const actionCreators = {
     clickedOnMesh: (name: string) => <MeshClickedAction>{ type: MESH_CLICKED, name },
-    clearName: () => <MeshClearedAction>{ type: MESH_CLEARED }
+    clearSelection: () => <MeshClearedAction>{ type: MESH_CLEARED }
 };
 
 // ----------------

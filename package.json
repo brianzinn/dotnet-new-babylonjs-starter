@@ -29,7 +29,7 @@
     "json-loader": "0.5.4",
     "node-noop": "1.0.0",
     "react": "15.6.1",
-    "react-babylonjs": "0.0.9",
+    "react-babylonjs": "^0.1.0",
     "react-dom": "15.6.1",
     "react-hot-loader": "3.0.0-beta.7",
     "react-redux": "5.0.5",

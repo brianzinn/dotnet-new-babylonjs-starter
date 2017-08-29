@@ -7,13 +7,13 @@ import {
     HighlightLayer, IHighlightLayerOptions
 } from 'babylonjs'
 import { ApplicationState } from '../store';
-import * as PlaygroundStore from '../store/Playground';
+import { MeshClearedAction, MESH_CLEARED, PlaygroundState, actionCreators } from '../store/Playground';
 
-import { Scene as ReactScene } from 'react-babylonjs'
+import { Scene as ReactScene, registerHandler, removeHandler } from 'react-babylonjs'
 
 type PlaygroundProps =
-    PlaygroundStore.PlaygroundState
-    & typeof PlaygroundStore.actionCreators
+    PlaygroundState
+    & typeof actionCreators
     & RouteComponentProps<{}>;
 
 class Playground extends React.Component<PlaygroundProps, {}> {
@@ -21,6 +21,8 @@ class Playground extends React.Component<PlaygroundProps, {}> {
     private light: Light
     private highlightLayer: HighlightLayer
     private highlightedMeshName: string | undefined
+    private actionHandler: (action: any) => boolean
+    private scene?: Scene
 
     onCanvasMouseOver = (e: any) => {
         const mouseOverIntensity = 0.5
@@ -39,6 +41,8 @@ class Playground extends React.Component<PlaygroundProps, {}> {
         let canvas: HTMLElement = e.canvas
         let scene: Scene = e.scene
         let engine: Engine = e.engine
+
+        this.scene = scene // we need a reference in our middleware listener
 
         const { lights, camera } = this.initEnvironment(canvas, scene)
 
@@ -131,11 +135,50 @@ class Playground extends React.Component<PlaygroundProps, {}> {
         }
     }
 
+    componentDidMount() {
+
+        // you can add listeners to redux actions - they are intercepted by the middleware
+        let handlers = {
+            [MESH_CLEARED]: (action: MeshClearedAction) => {
+                if (this.highlightedMeshName !== undefined && this.scene !== undefined) {
+                    let highlightedMesh = this.scene.getMeshByName(this.highlightedMeshName) as Mesh
+                    this.highlightLayer.removeMesh(highlightedMesh)
+                    console.log(`Cleared selection '${this.highlightedMeshName}' (in Playground).`)
+                    this.highlightedMeshName = undefined
+                    
+                } else {
+                    console.log('Cannot clear selection - (nothing selected or scene is undefined).')
+                }
+                return true   
+            }
+        }
+
+        this.actionHandler = (action: any) => {
+            let handler = handlers[action.type]
+            if (handler) {
+                return handler(action)
+            } else {
+                console.log(`no handler defined in babylonJS scene for ${action.type}`, handlers)
+                return false                
+            }
+        }
+
+        registerHandler(this.actionHandler)
+    }
+
+    componentWillUnmount() {
+        if (this.scene) {
+            this.scene.dispose()
+        }
+        this.scene = undefined
+        removeHandler(this.actionHandler)
+    }
+
     public render() {
         return <div>
             <h1>Playground</h1>
             <div>
-                <button disabled={this.props.lastClickedMeshName === ''} onClick={() => { this.props.clearName() }}>Clear</button >
+                <button disabled={this.props.lastClickedMeshName === ''} onClick={() => { this.props.clearSelection() }}>Clear</button >
                 &nbsp;
                 {this.props.lastClickedMeshName === '' &&
                     <span key='lastClicked'>Click on sphere or ground (the rest is a skybox with gradient)</span>
@@ -162,5 +205,5 @@ class Playground extends React.Component<PlaygroundProps, {}> {
 // Wire up the React component to the Redux store
 export default connect(
     (state: ApplicationState) => state.playground, // Selects which state properties are merged into the component's props
-    PlaygroundStore.actionCreators                 // Selects which action creators are merged into the component's props
+    actionCreators                 // Selects which action creators are merged into the component's props
 )(Playground) as typeof Playground;
